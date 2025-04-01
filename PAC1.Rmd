@@ -1,0 +1,101 @@
+---
+title: "PAC1"
+author: "Xènia Castellà"
+date: "2025-03-30"
+output: 
+  pdf_document:
+    keep_tex: true
+    toc: true
+  html_document:
+    toc: true
+github: "https://github.com/xcasteca/Castella-Camps-Xenia-PEC1"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_libraries, include=FALSE}
+require(SummarizedExperiment)
+require(BiocManager)
+```
+
+```{r asignaciones, include=FALSE}
+myfile <- "human_cachexia.csv"
+```
+
+# Resum
+
+# Objectius
+
+# Mètdoes
+
+# Resultats
+
+# Discussió
+
+# Conclusions
+
+## Punt 2
+
+Llegim el fitxer que conté les dades.
+```{r}
+dades <- read.csv(myfile, header = TRUE, sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
+head(dades)
+str(dades)
+dim(dades)
+```
+
+En el nostre cas és un fitxer de dades de metabolòmica que tracta la caquexia amb 77 pacients i 65 variables. Observem que tenim dues columnes, `Patient ID` i `Muscle loss`, que són les nostres covariables que ens donen informació de les mostres. La resta de les columnes ens serveixen per construir una matriu de dades, ja que són els matebolits. 
+
+```{r}
+row_dades <- DataFrame(
+  Patient_ID = dades$`Patient ID`,
+  Muscle_loss = dades$`Muscle loss`
+)
+
+assay_dades <- as.matrix(dades[, -c(1,2)])
+rownames(assay_dades) <- dades$`Patient ID`
+
+col_dades <- DataFrame(
+  Sample = colnames(dades[,-c(1,2)])
+)
+                       
+se <- SummarizedExperiment(assays=list(counts=assay_dades),
+                           colData = col_dades,
+                           rowData = row_dades)
+```
+
+Com que la classe `SummarizedExperiment` és una extensió d' `ExpressionSet`, és molt similar. No obstant, la principal diferència és que `SummarizedExperiment` és més flexible amb la informació de les files, per exemple, permet tant `GRanges based` com els `DataFrames`.
+
+Un cop creat l'objecte de la classe `SummarizedExperiment`, continuem fent una anàlisi exploratòria. Primer de tot, observem quin aspecte té el nostre objecte.
+
+```{r}
+se
+head(assay(se))
+dim(assay(se))
+colData(se)
+dim(colData(se))
+head(rowData(se))
+dim(rowData(se))
+```
+Ara, utilitzem eines estadístiques bàsiques i ho representarem gràficament. 
+
+```{r}
+round(apply(assay(se), 2, summary))
+
+opt <- par(mfrow = c(3,3))
+for (i in 1:ncol(assay(se)))
+  hist(assay(se)[,i], main = colnames(assay(se))[i])
+par(opt)
+```
+
+```{r}
+
+```
+
+
+
+# Referències
+
+Podeu trobar el codi a [GitHub](`r "https://github.com/xcasteca/Castella-Camps-Xenia-PEC1"`)
