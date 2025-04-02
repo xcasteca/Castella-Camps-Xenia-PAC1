@@ -1,0 +1,43 @@
+---
+title: "metadata"
+author: "Xènia Castellà"
+date: "2025-04-02"
+output: 
+  pdf_document:
+    keep_tex: true
+    toc: true
+  html_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Aquest arxiu Markdown conté les metadades de l'objecte de classe `SummarizedExperiment`. Primer de tot, carreguem el nostre objecte que té de nom `se`.
+
+```{r}
+load("SummarizedExperiment.Rda")
+```
+
+La matriu de conteigs és:
+
+```{r}
+assay(se)
+```
+Les metadades de les mostres estan emmagatzemades a `colData(se)`.
+
+```{r}
+colData(se)
+```
+
+Les metadades dels pacients estan guardades a `rowData()`.
+
+```{r}
+rowData(se)
+```
+
+
+
+
