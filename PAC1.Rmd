@@ -8,6 +8,7 @@ output:
     toc: true
   html_document:
     toc: true
+    toc_appendix: true
 github: "https://github.com/xcasteca/Castella-Camps-Xenia-PEC1"
 ---
 
@@ -26,27 +27,37 @@ myfile <- "human_cachexia.csv"
 
 # Resum
 
+En aquesta primera prova d'avaluació contínua es crea a partir de dades de `caquèxia` un objecte de classe `SummarizedExperiment`. A partir del maneig de l'objecte on tenim identificadors dels pacients i pèrdua del múscul com a covariables característiques, covariables mostres que són les mostres dels metabòlits que s'han pres, fem una anàlisi exploratòria, tant una anàlisi univariant com multivariant. Gràcies a l’anàlisi univariant hem observat que per comparar les mostres entre elles hem hagut de normalitzar prenent logaritmes. Així que finalment, hem obtingut a partir del mètode de les principals components (PCA) i de l’agrupació jeràrquica que hi ha 4 mostres que s’agrupen amb diferenciació a les restants. Aquest fet ens dona informació que hi pot haver efecte `batch`.
+
 # Objectius
 
-# Mètdoes
+Per tal d’afrontar la realització d’aquesta PAC, hem de saber treballar amb algunes de les eines que han estat introduïdes durant el primer repte. Per tant, l’objectiu d’aquesta entrega és estar familiaritzats i tenir destressa amb:
+
+-   Les tecnologies òmiques.
+-   `Bioconductor` i les classes que s’utilitzen per emmagatzemar dades òmiques, com els `expressionSets` i `SummarizedExperiment`.
+-   `Git` com a eina de control de versions, com `GitHub`.
+-   Les eines estadístiques d’exploració de dades introduïdes.
+-   La pràctica d’eines i mètodes treballades.
+-   Planificar i executar una versió simplificada del procés d’anàlisi de dades òmiques.
+
+# Mètodes
+
+En aquest entrega ens hem centrat amb les dades proporcionades pel repositori de GitHub de l’usuari `alexsanchezpla`. En concret, hem seleccionat i descarregat un dataset de *meatobolòmica*, el de `caquèxia`. El dataset de `caquèxia` inclou un fitxer .csv anomenat `human_cachexia.csv` on inclou 77 files i 65 columnes. Les 65 columnes proporcionen dades de sobre la identificació del pacient, la pèrdua de múscul i 63 mostres de metabòlits. A més, hi ha un document anomenat `description.md` que ens proporciona informació sobre el dataset. Ens informa que les mostres no estan aparellades, hi ha 2 grups que es detecten a les mostres, tots els valors de les dades són numèriques, que no hi ha cap valor `NULL` i que aquestes dades han passat la comprovació de sanitat. Per poder treballar amb aquestes dades, hem hagut de familiaritzar-nos amb la classe `SummarizedExperiment` per tal de crear un objecte d’aquesta classe. Per això, s’ha requerit les llibreries de `SummarizedExperiment` i `BiocManager`. Per fer l’anàlisi exploratòria del dataset per tal d’obtenir-ne una visió general, hem utilitzat comandaments bàsics per veure’n el seu aspecte. Un cop realitzat, hem continuat fent un anàlisi estadístic univariant. Hem observat cada mostra com es distribueix tant amb un histograma com amb boxplot. Així que boxplot ens ha permès poder tenir totes les mostres graficades conjuntament. Així que hem observat que no era fàcil comparar-les, i hem optat per normalitzar les mostres prenent logaritmes. Seguidament, hem passat a analitzar les dades a nivell multivariant. Hem utilitzat les eines de les components principals (PCA) i de l’agrupació jeràrquica. On en tots dos casos hem detectat que es diferencien dos grups.
 
 # Resultats
 
-# Discussió
+Primer de tot, llegim el fitxer que conté les dades i mirem quina estructura té. [Veure resultats a Annex A](annex-a).
 
-# Conclusions
-
-## Punt 2
-
-Llegim el fitxer que conté les dades.
 ```{r}
-dades <- read.csv(myfile, header = TRUE, sep = ",", stringsAsFactors = FALSE, check.names = FALSE)
-head(dades)
-str(dades)
+dades <- read.csv(myfile, header = TRUE, sep = ",", stringsAsFactors = FALSE, 
+                  check.names = FALSE)
 dim(dades)
+table(dades$`Muscle loss`)
 ```
 
-En el nostre cas és un fitxer de dades de metabolòmica que tracta la caquexia amb 77 pacients i 65 variables. Observem que tenim dues columnes, `Patient ID` i `Muscle loss`, que són les nostres covariables que ens donen informació de les mostres. La resta de les columnes ens serveixen per construir una matriu de dades, ja que són els matebolits. 
+En el nostre cas és un fitxer de dades de metabolòmica que tracta la caquèxia amb 77 pacients i 65 variables. Observem que tenim dues columnes, `Patient ID` i `Muscle loss`, que són les covariables que ens donen informació de les característiques. La resta de les columnes ens serveixen per construir una matriu de dades, ja que són els matebolits i són covariables de mostres.
+
+Procediment a organitzar aquesta informació del dataset en els conjunts de metadades, característiques i de la matriu per crear l'objecte de classes `SummarizedExperimment`. El conjunt de metadades, que estarà assignat a `col_dades`, contindrà la informació de les mostres dels metabolits. El conjunt de característiques, és a dir, les columnes del `PacinetID` i `Muscle loss`, estarà contingut dins del `DataFrame` de `row_dades`. Finalment, la matriu de les dades de les mostres ho contindrà `assay_dades`.
 
 ```{r}
 row_dades <- DataFrame(
@@ -60,7 +71,11 @@ rownames(assay_dades) <- dades$`Patient ID`
 col_dades <- DataFrame(
   Sample = colnames(dades[,-c(1,2)])
 )
-                       
+```
+
+Amb aquestes assignacions realitzades, ja podem construir el nostre objecte de la classe `SummarizedExperiment`.
+
+```{r}
 se <- SummarizedExperiment(assays=list(counts=assay_dades),
                            colData = col_dades,
                            rowData = row_dades)
@@ -74,39 +89,33 @@ Un cop creat l'objecte de la classe `SummarizedExperiment`, continuem fent una a
 
 ```{r}
 se
-head(assay(se))
+head(assay(se), n=2)
 dim(assay(se))
 colData(se)
 dim(colData(se))
-head(rowData(se))
+head(rowData(se), n=3)
 dim(rowData(se))
 ```
-Ara, utilitzem eines estadístiques bàsiques i ho representem gràficament. 
 
-```{r}
-round(apply(assay(se), 2, summary))
-```
+Ara, utilitzem eines estadístiques bàsiques i ho representem gràficament. Primer apliquem la funció `summary()` a les dades i les representem gràficament amb histograma. [Veure resultats a l'annex B](#annex-b).
 
-Per cada metabolit grafiquem un histograma. 
-
-```{r}
-opt <- par(mfrow = c(3,3))
-for (i in 1:ncol(assay(se)))
-  hist(assay(se)[,i], main = colnames(assay(se))[i], xlab = colnames(assay(se))[i])
-par(opt)
-```
 També ho representem amb boxplot per veure totes les mostres juntes.
+
 ```{r}
-boxplot(assay(se), col = "blue", main = "Valors d'expressió per a \n 63 mostres dos grups", xlab="Matebolits", 
-        ylab="Expressió", las=2, cex.axis=0.7, cex.main=0.7, outline = FALSE)
+boxplot(assay(se), col = "blue", main = "Valors d'expressió per a \n 63 mostres dos grups",
+        ylab="Expressió", 
+        las=2, cex.axis=0.7, cex.main=0.7, outline = FALSE)
 ```
+
 Acabem de veure que si ho grafiquem amb boxplot no podem comparar els metabolits, ja que tenen valors molt diferents. Per tant, normalitzem les dades fent ús de logaritmes.
 
 ```{r}
-boxplot(log2(assay(se)), col = "blue", main = "Valors d'expressió per a \n 63 mostres dos grups", xlab="Matebolits", 
+boxplot(log2(assay(se)), col = "blue", main = "Valors d'expressió per a \n 63 mostres
+        dos grups", 
         ylab="Expressió", las=2, cex.axis=0.7, cex.main=0.7, outline = FALSE)
 ```
-Així que veiem que és millor que d'ara endavant prenem logaritmes. 
+
+Veiem que és millor i per tant, d'ara endavant, prenem logaritmes a les dades del nostre objecte.
 
 ## Visualització de dades multivariants
 
@@ -117,24 +126,61 @@ pcX <- prcomp(t(log2(assay(se))), scale = TRUE)
 loads <- round(pcX$sdev^2/sum(pcX$sdev^2)*100,1)
 ```
 
+Grafiquem les dues primeres components.
+
 ```{r}
 xlab <- c(paste("PC1", loads[1], "%"))
 ylab <- c(paste("PC2", loads[2], "%"))
 plot(pcX$x[,1:2], xlab=xlab, ylab = ylab, col = "blue", main = "PCA")
-names2plot <- substr(colnames(assay(se)), 1, 5)
-#names2plot <- paste0(substr(colnames(assay(se)), 1,3),1:4)
+names2plot <- substr(colnames(assay(se)), 1, 9)
 text(pcX$x[,1], pcX$x[,2],names2plot, pos = 3, cex = .6)
-#text(pcX$x[,1], pcX$x[,2],colnames(assay(se)), pos = 3, cex = .6)
 ```
 
+La següent graficació és una agrupació jeràrquica per visualitzar qualsevol mena d'agrupació entre les mostres.
 
 ```{r}
 colnames(se) <- names2plot
-clust.euclid.average <- hclust(dist(t(assay(se))), method = "average")
-plot(clust.euclid.average, hang = -1)
+clust.euclid.average <- hclust(dist(t(log2(assay(se)))), method = "average")
+par(mar = c(10,4,4,2))
+plot(clust.euclid.average, hang = -1, cex = 0.8)
 ```
 
+Tant a la `PCA` com a l'agrupació jeràrquica podem observar que hi ha dues agrupacions clares. Per una banda hi ha `Creatinine`, `Hippurate`, `Citrate` i `Glycine` que s'agrupen separades de la resta, fet que ens indica que hi ha efecte `batch` o mostres inusuals.
+
+# Discussió
+
+Un cop feta l’anàlisi exploratòria del dataset `caquèxia` i hem pogut observar la seva informació a través d’un objecte de la classe ´SummarizedExperiment´, podem discutir sobre la informació que hem proporcionat i també les seves limitacions.
+Per una banda, tenim 77 pacients diferents dels quals se’ls hi ha pres mostres de 63 metabòlits. A més, també tenim una informació prou interessant que és la pèrdua de múscul que pot ser de dos tipus, o bé `controlada` o bé amb `caquèxia`. 
+Al final d’aquesta anàlisi obtenim que hi ha efecte batch. Així que una limitació és que no proporcionem cap correcció per revertir els efects de batch. Amb  les dades proporcionades tampoc sabem quin és l’error primari que comporta que hi hagi aquests valors inusuals. 
+Una altra limitació seria que no hi ha hagut una conclusió clara entre els tipus de pèrdua de múscul amb les diferents mostres dels metabòlits. 
+En conclusió, tot i que s’ha pogut explorar les dades amb cert detall gràcies a l’objecte creat, tots els càlculs i gràfics ens han ajudat a entendre més les dades i a corroborar entre les diferents eines allà on hi ha limitacions. 
+
+# Conclusions
+
+En conclusió, la creació de l'objecte de classe `SummarizedExperiment`permet que les dades estiguin en constant sincronització, cosa que facilita la consistència de les dades. Hem detectat que de tots els pacients, hi ha dos grups diferenciats en la 'pèrdua de múscul', ja sigui controlat o per caquèxia. Hem estudiat 63 mostres, tant una per una com conjuntamnet. Hem observat que per poder-les comparar les havíem de normalitzar amb logaritme. Això ens ha permés poder observar tant a través del gràfic de PCA com de l'agrupació jeràrquica que hi ha 4 mostres amb valors inusuals, amb efecte batch. 
 
 # Referències
 
 Podeu trobar el codi a [GitHub](`r "https://github.com/xcasteca/Castella-Camps-Xenia-PEC1"`)
+
+\appendix
+
+# Annex A {#annex-a}
+Estructura de les dades un cop llegides del fitxer `human_cachexia.csv`.
+```{r}
+head(dades, n=3)
+str(dades)
+```
+
+# Annex B {#annex-b}
+
+```{r}
+round(apply(assay(se), 2, summary))
+```
+Un histograma per cada mostra. 
+```{r}
+opt <- par(mfrow = c(3,3))
+for (i in 1:ncol(assay(se)))
+  hist(assay(se)[,i], main = colnames(assay(se))[i], xlab = colnames(assay(se))[i])
+par(opt)
+```
