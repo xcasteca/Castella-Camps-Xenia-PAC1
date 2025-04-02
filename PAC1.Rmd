@@ -27,7 +27,7 @@ myfile <- "human_cachexia.csv"
 
 # Resum
 
-En aquesta primera prova d'avaluació contínua es crea a partir de dades de `caquèxia` un objecte de classe `SummarizedExperiment`. A partir del maneig de l'objecte on tenim identificadors dels pacients i pèrdua del múscul com a covariables característiques, covariables mostres que són les mostres dels metabòlits que s'han pres, fem una anàlisi exploratòria, tant una anàlisi univariant com multivariant. Gràcies a l’anàlisi univariant hem observat que per comparar les mostres entre elles hem hagut de normalitzar prenent logaritmes. Així que finalment, hem obtingut a partir del mètode de les principals components (PCA) i de l’agrupació jeràrquica que hi ha 4 mostres que s’agrupen amb diferenciació a les restants. Aquest fet ens dona informació que hi pot haver efecte `batch`.
+En aquesta primera prova d'avaluació contínua es crea a partir de dades de `caquèxia` un objecte de classe `SummarizedExperiment`. A partir del maneig de l'objecte on tenim identificadors dels pacients i pèrdua del múscul com a covariables característiques i les covariables mostres que són les mostres dels metabòlits que s'han pres, fem una anàlisi exploratòria, tant una anàlisi univariant com multivariant. Gràcies a l’anàlisi univariant hem observat que per comparar les mostres entre elles hem hagut de normalitzar prenent logaritmes. Així que finalment, hem obtingut a partir del mètode de les principals components (PCA) i de l’agrupació jeràrquica que hi ha 4 mostres que s’agrupen amb diferenciació a les restants. Aquest fet ens dona informació que hi pot haver efecte `batch`.
 
 # Objectius
 
@@ -149,7 +149,7 @@ Tant a la `PCA` com a l'agrupació jeràrquica podem observar que hi ha dues agr
 
 # Discussió
 
-Un cop feta l’anàlisi exploratòria del dataset `caquèxia` i hem pogut observar la seva informació a través d’un objecte de la classe ´SummarizedExperiment´, podem discutir sobre la informació que hem proporcionat i també les seves limitacions.
+Un cop feta l’anàlisi exploratòria del dataset `caquèxia` i hem pogut observar la seva informació a través d’un objecte de la classe `SummarizedExperiment`, podem discutir sobre la informació que hem proporcionat i també les seves limitacions.
 Per una banda, tenim 77 pacients diferents dels quals se’ls hi ha pres mostres de 63 metabòlits. A més, també tenim una informació prou interessant que és la pèrdua de múscul que pot ser de dos tipus, o bé `controlada` o bé amb `caquèxia`. 
 Al final d’aquesta anàlisi obtenim que hi ha efecte batch. Així que una limitació és que no proporcionem cap correcció per revertir els efects de batch. Amb  les dades proporcionades tampoc sabem quin és l’error primari que comporta que hi hagi aquests valors inusuals. 
 Una altra limitació seria que no hi ha hagut una conclusió clara entre els tipus de pèrdua de múscul amb les diferents mostres dels metabòlits. 
@@ -157,7 +157,7 @@ En conclusió, tot i que s’ha pogut explorar les dades amb cert detall gràcie
 
 # Conclusions
 
-En conclusió, la creació de l'objecte de classe `SummarizedExperiment`permet que les dades estiguin en constant sincronització, cosa que facilita la consistència de les dades. Hem detectat que de tots els pacients, hi ha dos grups diferenciats en la 'pèrdua de múscul', ja sigui controlat o per caquèxia. Hem estudiat 63 mostres, tant una per una com conjuntamnet. Hem observat que per poder-les comparar les havíem de normalitzar amb logaritme. Això ens ha permés poder observar tant a través del gràfic de PCA com de l'agrupació jeràrquica que hi ha 4 mostres amb valors inusuals, amb efecte batch. 
+En conclusió, la creació de l'objecte de classe `SummarizedExperiment`permet que les dades estiguin en constant sincronització, cosa que facilita la consistència de les dades. Hem detectat que de tots els pacients, hi ha dos grups diferenciats en la 'pèrdua de múscul', ja sigui controlat o per caquèxia. Hem estudiat 63 mostres, tant una per una com conjuntament fent una anàlisi univariant i multivariant. Hem observat que per poder-les comparar les havíem de normalitzar amb logaritme. Això ens ha permès poder observar tant a través del gràfic de PCA com de l'agrupació jeràrquica que hi ha 4 mostres amb valors inusuals, amb efecte batch. 
 
 # Referències
 
